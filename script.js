@@ -204,7 +204,7 @@ vidaContainer.onclick = e => {
   }
 };
 
-// Rolador de Dados rola
+// Rolador de Dados
 const rolarBtn = document.getElementById('rolar-dado');
 const resDado = document.getElementById('resultado-dado');
 const histDados = document.getElementById('historico-dados');
@@ -237,14 +237,14 @@ document.getElementById('gerar-nome').onclick = () => {
   document.getElementById('nome-gerado').innerText = nome;
 };
 
-// Bloco de Notas do Mestre pika
+// Bloco de Notas do Mestre
 const notas = document.getElementById('notas-mestre');
 notas.value = localStorage.getItem('notasMestre') || '';
 notas.oninput = () => {
   localStorage.setItem('notasMestre', notas.value);
 };
 
-// músicas Sigma
+// músicas controlador
 document.getElementById('adicionar-musica').onclick = () => {
   const link = document.getElementById('link-musica').value.trim();
   if(link) {
@@ -317,7 +317,7 @@ function salvarMusicas() {
 }
 renderMusicas();
 
-// missoes e quest ratazana
+// missoes e quest
 const missoesList = document.getElementById('missoes-list');
 document.getElementById('add-missao').onclick = () => {
   const titulo = prompt("Título da missão:");
