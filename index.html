@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Painel do Mestre RPG</title>
-  <link rel="stylesheet" href="style.CSS">
+  <link rel="stylesheet" href="CSS/style.CSS">
+  <link rel="stylesheet" href="CSS/formularios.css">
 </head>
 <body>
   <aside class="sidebar">
@@ -24,28 +25,84 @@
     </nav>
   </aside>
   <main>
+
     <section id="fichas" class="tab active">
       <h2>Fichas de Personagem</h2>
       <div id="fichas-container">
+
         <!-- Fichas de personagem -->
-        <button id="add-ficha">Adicionar Ficha</button>
+        <button id="abrirFichaForm">Adicionar Ficha</button>
         <div id="fichas-list"></div>
       </div>
+
+        <div class="forms-back" id="formsBack">
+          <form class="create-forms" id="criar-ficha">
+            <h2>Adicionar Ficha</h2>
+
+            <div class="form-row">
+              <label for="nome">Nome:</label>
+              <input type="text" id="nome" name="nome" required>
+            </div>
+
+            <div class="form-row">
+              <label for="classe">Classe:</label>
+              <select name="classe" id="classe">
+                <option value="Barbaro">Bárbaro</option> 
+                <option value="Bardo">Bardo</option> 
+                <option value="Bruxo">Bruxo</option> 
+                <option value="Clerigo">Clérigo</option> 
+                <option value="Druida">Druida</option> 
+                <option value="Feiticeiro">Feiticeiro</option> 
+                <option value="Guerreiro">Guerreiro</option> 
+                <option value="Ladino">Ladino</option> 
+                <option value="Mago">Mago</option> 
+                <option value="Monge">Monge</option> 
+                <option value="Paladino">Paladino</option> 
+                <option value="Patrulheiro">Patrulheiro</option> 
+                <option value="Artifice">Artífice</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="nivel">Nível:</label>
+              <input type="number" id="nivel" name="nivel" required>
+            </div>
+
+            <div class="form-row">
+              <label for="vida">HP:</label>
+              <input type="number" id="vida" name="vida" required>
+            </div>
+
+            <div class="form-row">
+              <label for="detalhes">Detalhes:</label>
+              <textarea rows="5" id="detalhes" name="detalhes"></textarea>
+            </div>
+
+            <div class="form-buttons">
+              <button type="button" id="salvarFicha" onclick="salvaFicha()">Enviar</button>
+              <button type="reset" id="fecharFichaForm">Cancelar</button>
+            </div>
+          </form>
+        </div>
     </section>
+
     <section id="npcs" class="tab">
       <h2>NPCs</h2>
-      <button id="add-npc">Adicionar NPC</button>
+      <button id="add-npc" onclick="add_npc()">Adicionar NPC</button>
       <div id="npcs-list"></div>
     </section>
+
     <section id="iniciativa" class="tab">
       <h2>Registro de Iniciativa</h2>
+      <button id="add-iniciativa" onclick="add_iniciativa()">Adicionar Participante</button>
       <div id="iniciativa-container"></div>
-      <button id="add-iniciativa">Adicionar Participante</button>
     </section>
+
     <section id="vida" class="tab">
       <h2>Pontos de Vida / Condições</h2>
       <div id="vida-container"></div>
     </section>
+
     <section id="dados" class="tab">
       <h2>Rolador de Dados Virtual</h2>
       <div id="rolador-container">
@@ -60,32 +117,40 @@
           <option value="100">d100</option>
         </select>
         <input type="number" id="modificador" value="0" style="width:60px;">
-        <button id="rolar-dado">Rolar</button>
+        <button id="rolar-dado" onclick="rolar_dado()">Rolar</button>
         <div id="resultado-dado"></div>
         <div id="historico-dados"></div>
       </div>
     </section>
+
     <section id="nomes" class="tab">
       <h2>Gerador de Nomes Aleatórios</h2>
-      <button id="gerar-nome">Gerar Nome</button>
+      <button id="gerar-nome" onclick="gerar_nome()">Gerar Nome</button>
       <div id="nome-gerado"></div>
     </section>
+
     <section id="notas" class="tab">
       <h2>Bloco de Notas do Mestre</h2>
       <textarea id="notas-mestre" rows="12" placeholder="Suas anotações ficam salvas aqui..."></textarea>
     </section>
+
     <section id="musica" class="tab">
       <h2>Música/Ambiente</h2>
       <input type="text" id="link-musica" placeholder="Cole o link do YouTube ou Spotify">
-      <button id="adicionar-musica">Adicionar</button>
+      <button id="adicionar-musica" onclick="adicionar_musica()">Adicionar</button>
       <div id="musicas-embed"></div>
     </section>
+
     <section id="missoes" class="tab">
       <h2>Painel de Missões / Quests</h2>
-      <button id="add-missao">Adicionar Missão</button>
+      <button id="add-missao" onclick="add_missao()">Adicionar Missão</button>
       <div id="missoes-list"></div>
     </section>
-  </main>
-  <script src="script.js"></script>
+  </main> 
+
+  <!-- SCRIPT AREA -->
+  <script src="JS/script.js"></script>
+  <script src="JS/funcaobotoes.js"></script>
+  <script src="JS/abrircriadores.js"></script>
 </body>
 </html>

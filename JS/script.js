@@ -26,92 +26,6 @@ const nomes = [
   "Elowen", "Tharivol", "Merla", "Korrin", "Barundar", "Lia", "Bryn", "Seraphine", "Grim", "Talon", "Syllin", "Durnan", "Yagra", "Fenthwick", "Jasper", "Nim", "Tika", "Raistlin", "Havard", "Anwyn", "Finn", "Isolde", "Leoric"
 ];
 
-// Funções Gerais>>>>>>>>>>>
-// Navegação por abas
-tabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelector('.sidebar nav ul li.active').classList.remove('active');
-    tab.classList.add('active');
-    sections.forEach(sec => sec.classList.remove('active'));
-    document.getElementById(tab.dataset.tab).classList.add('active');
-  });
-});
-
-//Adicionar fichas
-function add_ficha()
-{
-    openModal({
-      title: 'Adicionar Ficha de Personagem',
-      fields: [
-        { name: 'Nome', label: 'Nome do personagem', required: true },
-        { name: 'Classe', label: 'Classe' },
-        { name: 'Nível', label: 'Nível' },
-        { name: 'HP', label: 'Pontos de Vida', type: 'number' },
-        { name: 'Detalhes', label: 'Anotações/Histórico', type: 'textarea' }
-      ],
-      onSave: (ficha) => {
-        addFichaCard(ficha);
-        salvarFichas();
-      }
-    });
-}
-
-// Gerenciamento de NPCs
-function add_npc()
-{
-  const npc = {
-    nome: prompt("Nome do NPC:"),
-    tipo: prompt("Tipo (ex: vilão, comerciante, etc.):"),
-    detalhes: prompt("Notas/Descrição:")
-  };
-  if(npc.nome) {
-    addNpcCard(npc);
-    salvarNpcs();
-  }
-}
-
-// missoes e quest ratazana
-function add_missao()
-{
-  const titulo = prompt("Título da missão:");
-  const descricao = prompt("Descrição/objetivo:");
-  const status = prompt("Status (ativa/concluída/falhada):");
-  if(titulo) {
-    addMissaoCard({titulo, descricao, status});
-    salvarMissoes();
-  }
-}
-
-//iniciativa
-function add_iniciativa()
-{
-  const nome = prompt('Nome do participante:');
-  const valor = parseInt(prompt('Valor da iniciativa:'));
-  if(nome && !isNaN(valor)) {
-    iniciativa.push({nome, valor});
-    salvarIniciativa();
-    renderIniciativa();
-  }
-}
-
-// músicas Sigma
-function adicionar_musica()
-{
-  const link = document.getElementById('link-musica').value.trim();
-  if(link) {
-    addMusicaEmbed(link);
-    salvarMusicas();
-    document.getElementById('link-musica').value = '';
-  }
-}
-
-//Gerar nome
-function gerar_nome()
-{
-  const nome = nomes[Math.floor(Math.random()*nomes.length)];
-  document.getElementById('nome-gerado').innerText = nome;
-}
-
 //Ficha buxa >>>>>>>>>>>>>>>>>>>>>>>>>>>
 function addFichaCard(ficha) {
   const div = document.createElement('div');
@@ -128,6 +42,7 @@ function addFichaCard(ficha) {
   };
   fichasList.appendChild(div);
 }
+
 function salvarFichas() {
   const fichas = [];
   fichasList.querySelectorAll('.ficha-card').forEach(card => {
@@ -260,39 +175,10 @@ function salvarVida() {
 }
 renderVida();
 
-function add_vida()
-{
-  if(e.target && e.target.id === "adicionar-vida") {
-    const nome = prompt('Nome do personagem:');
-    const hp = parseInt(prompt('HP atual:'));
-    if(nome && !isNaN(hp)) {
-      vidaPersonagens.push({nome, hp, condicoes: ''});
-      salvarVida();
-      renderVida();
-    }
-  }
-}
-
 // Rolador de Dados rola>>>>>>>>>>>>>>>>>>>>>
 let historicoDados = JSON.parse(localStorage.getItem('historicoDados')) || [];
 function renderHistoricoDados() {
   histDados.innerHTML = historicoDados.slice(-10).reverse().map(e=>e).join('<br>');
-}
-
-function rolar_dado()
-{
-  const qtd = parseInt(document.getElementById('quantidade-dado').value);
-  const tipo = parseInt(document.getElementById('tipo-dado').value);
-  const mod = parseInt(document.getElementById('modificador').value);
-  let rolls = [];
-  for(let i=0;i<qtd;i++) rolls.push(Math.floor(Math.random()*tipo)+1);
-  const total = rolls.reduce((a,b)=>a+b,0) + mod;
-  let texto = `${qtd}d${tipo}${mod>=0?'+':''}${mod}: (${rolls.join(', ')}) = <b>${total}</b>`;
-  resDado.innerHTML = texto;
-  historicoDados.push(texto);
-  if(historicoDados.length>25) historicoDados = historicoDados.slice(-25);
-  localStorage.setItem('historicoDados', JSON.stringify(historicoDados));
-  renderHistoricoDados();
 }
 renderHistoricoDados();
 
@@ -402,14 +288,14 @@ function addMissaoCard(missao) {
   missoesList.appendChild(div);
 }
 
-//Modal>>>>
-function openModal({ title, fields, onSave }) {
+/*
+function saveOnCard({title, fields})
+{
   const modalBg = document.getElementById('modal-bg');
   const modalTitle = document.getElementById('modal-title');
   const modalForm = document.getElementById('modal-form');
   modalTitle.textContent = title;
   modalForm.innerHTML = '';
-}
 
   fields.forEach(field => {
     const label = document.createElement('label');
@@ -425,3 +311,23 @@ function openModal({ title, fields, onSave }) {
     modalForm.appendChild(label);
     modalForm.appendChild(input);
   });
+}
+*/
+//Modal>>>>
+/*
+fields.forEach(field => {
+    const label = document.createElement('label');
+    label.textContent = field.label;
+    const input = field.type === 'textarea'
+      ? document.createElement('textarea')
+      : document.createElement('input');
+    input.type = field.type || 'text';
+    input.name = field.name;
+    input.required = field.required || false;
+    if (field.type !== 'textarea') input.value = field.value || '';
+    else input.textContent = field.value || '';
+    modalForm.appendChild(label);
+    modalForm.appendChild(input);
+  });
+
+  */
