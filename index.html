@@ -1,199 +1,243 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Painel do Mestre RPG</title>
-  <link rel="stylesheet" href="CSS/style.CSS">
-  <link rel="stylesheet" href="CSS/formularios.css">
-</head>
-<body>
-  <aside class="sidebar">
-    <h1>RPG Mestre</h1>
-    <nav>
-      <ul>
-        <li data-tab="fichas" class="active">Fichas de Personagem</li>
-        <li data-tab="npcs">NPCs</li>
-        <li data-tab="iniciativa">Registro de Iniciativa</li>
-        <li data-tab="vida">Pontos de Vida/Condições</li>
-        <li data-tab="dados">Rolador de Dados</li>
-        <li data-tab="nomes">Gerador de Nomes</li>
-        <li data-tab="notas">Notas do Mestre</li>
-        <li data-tab="musica">Música/Ambiente</li>
-        <li data-tab="missoes">Missões/Quests</li>
-      </ul>
-    </nav>
-  </aside>
-  <main>
-    <header class="topbar">
-      <div class="topbar-info">
-        <h2>Resumo da Sessão</h2>
-        <p>Controle rapidamente os elementos da sua mesa enquanto conduz a aventura.</p>
-      </div>
-      <div class="session-timer">
-        <div class="timer-display">
-          <span class="timer-label">Tempo de sessão</span>
-          <span id="session-timer">00:00:00</span>
-        </div>
-        <div class="timer-buttons">
-          <button id="timer-start">Iniciar</button>
-          <button id="timer-pause">Pausar</button>
-          <button id="timer-reset">Zerar</button>
-        </div>
-      </div>
-    </header>
-
-    <section class="quick-stats">
-      <article class="stat-card" data-stat="fichas">
-        <span class="stat-label">Fichas</span>
-        <span class="stat-value">0</span>
-      </article>
-      <article class="stat-card" data-stat="npcs">
-        <span class="stat-label">NPCs</span>
-        <span class="stat-value">0</span>
-      </article>
-      <article class="stat-card" data-stat="iniciativa">
-        <span class="stat-label">Iniciativa</span>
-        <span class="stat-value">0</span>
-      </article>
-      <article class="stat-card" data-stat="vida">
-        <span class="stat-label">Acompanhando vida</span>
-        <span class="stat-value">0</span>
-      </article>
-      <article class="stat-card" data-stat="missoes">
-        <span class="stat-label">Missões</span>
-        <span class="stat-value">0</span>
-      </article>
-    </section>
-
-    <section id="fichas" class="tab active">
-      <h2>Fichas de Personagem</h2>
-      <div id="fichas-container">
-
-        <!-- Fichas de personagem -->
-        <button id="abrirFichaForm">Adicionar Ficha</button>
-        <div id="fichas-list"></div>
-        <p class="empty-state" id="fichas-empty">Nenhuma ficha cadastrada ainda.</p>
-      </div>
-
-        <div class="forms-back" id="formsBack">
-          <form class="create-forms" id="criar-ficha">
-            <h2>Adicionar Ficha</h2>
-
-            <div class="form-row">
-              <label for="nome">Nome:</label>
-              <input type="text" id="nome" name="nome" required>
-            </div>
-
-            <div class="form-row">
-              <label for="classe">Classe:</label>
-              <select name="classe" id="classe">
-                <option value="Barbaro">Bárbaro</option> 
-                <option value="Bardo">Bardo</option> 
-                <option value="Bruxo">Bruxo</option> 
-                <option value="Clerigo">Clérigo</option> 
-                <option value="Druida">Druida</option> 
-                <option value="Feiticeiro">Feiticeiro</option> 
-                <option value="Guerreiro">Guerreiro</option> 
-                <option value="Ladino">Ladino</option> 
-                <option value="Mago">Mago</option> 
-                <option value="Monge">Monge</option> 
-                <option value="Paladino">Paladino</option> 
-                <option value="Patrulheiro">Patrulheiro</option> 
-                <option value="Artifice">Artífice</option>
-              </select>
-            </div>
-
-            <div class="form-row">
-              <label for="nivel">Nível:</label>
-              <input type="number" id="nivel" name="nivel" required>
-            </div>
-
-            <div class="form-row">
-              <label for="vida">HP:</label>
-              <input type="number" id="vida" name="vida" required>
-            </div>
-
-            <div class="form-row">
-              <label for="detalhes">Detalhes:</label>
-              <textarea rows="5" id="detalhes" name="detalhes"></textarea>
-            </div>
-
-            <div class="form-buttons">
-              <button type="submit" id="salvarFicha">Salvar</button>
-              <button type="reset" id="fecharFichaForm">Cancelar</button>
-            </div>
-          </form>
-        </div>
-    </section>
-
-    <section id="npcs" class="tab">
-      <h2>NPCs</h2>
-      <button id="add-npc" onclick="add_npc()">Adicionar NPC</button>
-      <div id="npcs-list"></div>
-      <p class="empty-state" id="npcs-empty">Nenhum NPC cadastrado.</p>
-    </section>
-
-    <section id="iniciativa" class="tab">
-      <h2>Registro de Iniciativa</h2>
-      <button id="add-iniciativa" onclick="add_iniciativa()">Adicionar Participante</button>
-      <div id="iniciativa-container"></div>
-    </section>
-
-    <section id="vida" class="tab">
-      <h2>Pontos de Vida / Condições</h2>
-      <div id="vida-container"></div>
-    </section>
-
-    <section id="dados" class="tab">
-      <h2>Rolador de Dados Virtual</h2>
-      <div id="rolador-container">
-        <input type="number" id="quantidade-dado" min="1" value="1" style="width:50px;">
-        <select id="tipo-dado">
-          <option value="4">d4</option>
-          <option value="6">d6</option>
-          <option value="8">d8</option>
-          <option value="10">d10</option>
-          <option value="12">d12</option>
-          <option value="20" selected>d20</option>
-          <option value="100">d100</option>
-        </select>
-        <input type="number" id="modificador" value="0" style="width:60px;">
-        <button id="rolar-dado" onclick="rolar_dado()">Rolar</button>
-        <div id="resultado-dado"></div>
-        <div id="historico-dados"></div>
-      </div>
-    </section>
-
-    <section id="nomes" class="tab">
-      <h2>Gerador de Nomes Aleatórios</h2>
-      <button id="gerar-nome" onclick="gerar_nome()">Gerar Nome</button>
-      <div id="nome-gerado"></div>
-    </section>
-
-    <section id="notas" class="tab">
-      <h2>Bloco de Notas do Mestre</h2>
-      <textarea id="notas-mestre" rows="12" placeholder="Suas anotações ficam salvas aqui..."></textarea>
-    </section>
-
-    <section id="musica" class="tab">
-      <h2>Música/Ambiente</h2>
-      <input type="text" id="link-musica" placeholder="Cole o link do YouTube ou Spotify">
-      <button id="adicionar-musica" onclick="adicionar_musica()">Adicionar</button>
-      <div id="musicas-embed"></div>
-    </section>
-
-    <section id="missoes" class="tab">
-      <h2>Painel de Missões / Quests</h2>
-      <button id="add-missao" onclick="add_missao()">Adicionar Missão</button>
-      <div id="missoes-list"></div>
-      <p class="empty-state" id="missoes-empty">Nenhuma missão registrada.</p>
-    </section>
-  </main>
-
-  <!-- SCRIPT AREA -->
-  <script src="JS/script.js"></script>
-  <script src="JS/funcaobotoes.js"></script>
-  <script src="JS/abrircriadores.js"></script>
-</body>
-</html>
+diff --git a/index.html b/index.html
+index e2df200e1f109892f2a3843fc91e1e19653f46e7..01e550b00d78b8b1cd57d84f3ae29fc3851f64dd 100644
+--- a/index.html
++++ b/index.html
+@@ -1,156 +1,199 @@
+ <!DOCTYPE html>
+ <html lang="pt-br">
+ <head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Painel do Mestre RPG</title>
+   <link rel="stylesheet" href="CSS/style.CSS">
+   <link rel="stylesheet" href="CSS/formularios.css">
+ </head>
+ <body>
+   <aside class="sidebar">
+     <h1>RPG Mestre</h1>
+     <nav>
+       <ul>
+         <li data-tab="fichas" class="active">Fichas de Personagem</li>
+         <li data-tab="npcs">NPCs</li>
+         <li data-tab="iniciativa">Registro de Iniciativa</li>
+         <li data-tab="vida">Pontos de Vida/Condições</li>
+         <li data-tab="dados">Rolador de Dados</li>
+         <li data-tab="nomes">Gerador de Nomes</li>
+         <li data-tab="notas">Notas do Mestre</li>
+         <li data-tab="musica">Música/Ambiente</li>
+         <li data-tab="missoes">Missões/Quests</li>
+       </ul>
+     </nav>
+-  </aside>
+-  <main>
+-
+-    <section id="fichas" class="tab active">
+-      <h2>Fichas de Personagem</h2>
+-      <div id="fichas-container">
+-
+-        <!-- Fichas de personagem -->
+-        <button id="abrirFichaForm">Adicionar Ficha</button>
+-        <div id="fichas-list"></div>
+-      </div>
+-
+-        <div class="forms-back" id="formsBack">
+-          <form class="create-forms" id="criar-ficha">
+-            <h2>Adicionar Ficha</h2>
++  </aside>
++  <main>
++    <header class="topbar">
++      <div class="topbar-info">
++        <h2>Resumo da Sessão</h2>
++        <p>Controle rapidamente os elementos da sua mesa enquanto conduz a aventura.</p>
++      </div>
++      <div class="session-timer">
++        <div class="timer-display">
++          <span class="timer-label">Tempo de sessão</span>
++          <span id="session-timer">00:00:00</span>
++        </div>
++        <div class="timer-buttons">
++          <button id="timer-start">Iniciar</button>
++          <button id="timer-pause">Pausar</button>
++          <button id="timer-reset">Zerar</button>
++        </div>
++      </div>
++    </header>
++
++    <section class="quick-stats">
++      <article class="stat-card" data-stat="fichas">
++        <span class="stat-label">Fichas</span>
++        <span class="stat-value">0</span>
++      </article>
++      <article class="stat-card" data-stat="npcs">
++        <span class="stat-label">NPCs</span>
++        <span class="stat-value">0</span>
++      </article>
++      <article class="stat-card" data-stat="iniciativa">
++        <span class="stat-label">Iniciativa</span>
++        <span class="stat-value">0</span>
++      </article>
++      <article class="stat-card" data-stat="vida">
++        <span class="stat-label">Acompanhando vida</span>
++        <span class="stat-value">0</span>
++      </article>
++      <article class="stat-card" data-stat="missoes">
++        <span class="stat-label">Missões</span>
++        <span class="stat-value">0</span>
++      </article>
++    </section>
++
++    <section id="fichas" class="tab active">
++      <h2>Fichas de Personagem</h2>
++      <div id="fichas-container">
++
++        <!-- Fichas de personagem -->
++        <button id="abrirFichaForm">Adicionar Ficha</button>
++        <div id="fichas-list"></div>
++        <p class="empty-state" id="fichas-empty">Nenhuma ficha cadastrada ainda.</p>
++      </div>
++
++        <div class="forms-back" id="formsBack">
++          <form class="create-forms" id="criar-ficha">
++            <h2>Adicionar Ficha</h2>
+ 
+             <div class="form-row">
+               <label for="nome">Nome:</label>
+               <input type="text" id="nome" name="nome" required>
+             </div>
+ 
+             <div class="form-row">
+               <label for="classe">Classe:</label>
+               <select name="classe" id="classe">
+                 <option value="Barbaro">Bárbaro</option> 
+                 <option value="Bardo">Bardo</option> 
+                 <option value="Bruxo">Bruxo</option> 
+                 <option value="Clerigo">Clérigo</option> 
+                 <option value="Druida">Druida</option> 
+                 <option value="Feiticeiro">Feiticeiro</option> 
+                 <option value="Guerreiro">Guerreiro</option> 
+                 <option value="Ladino">Ladino</option> 
+                 <option value="Mago">Mago</option> 
+                 <option value="Monge">Monge</option> 
+                 <option value="Paladino">Paladino</option> 
+                 <option value="Patrulheiro">Patrulheiro</option> 
+                 <option value="Artifice">Artífice</option>
+               </select>
+             </div>
+ 
+             <div class="form-row">
+               <label for="nivel">Nível:</label>
+               <input type="number" id="nivel" name="nivel" required>
+             </div>
+ 
+             <div class="form-row">
+               <label for="vida">HP:</label>
+               <input type="number" id="vida" name="vida" required>
+             </div>
+ 
+-            <div class="form-row">
+-              <label for="detalhes">Detalhes:</label>
+-              <textarea rows="5" id="detalhes" name="detalhes"></textarea>
+-            </div>
+-
+-            <div class="form-buttons">
+-              <button type="button" id="salvarFicha" onclick="salvaFicha()">Enviar</button>
+-              <button type="reset" id="fecharFichaForm">Cancelar</button>
+-            </div>
+-          </form>
+-        </div>
+-    </section>
+-
+-    <section id="npcs" class="tab">
+-      <h2>NPCs</h2>
+-      <button id="add-npc" onclick="add_npc()">Adicionar NPC</button>
+-      <div id="npcs-list"></div>
+-    </section>
++            <div class="form-row">
++              <label for="detalhes">Detalhes:</label>
++              <textarea rows="5" id="detalhes" name="detalhes"></textarea>
++            </div>
++
++            <div class="form-buttons">
++              <button type="submit" id="salvarFicha">Salvar</button>
++              <button type="reset" id="fecharFichaForm">Cancelar</button>
++            </div>
++          </form>
++        </div>
++    </section>
++
++    <section id="npcs" class="tab">
++      <h2>NPCs</h2>
++      <button id="add-npc" onclick="add_npc()">Adicionar NPC</button>
++      <div id="npcs-list"></div>
++      <p class="empty-state" id="npcs-empty">Nenhum NPC cadastrado.</p>
++    </section>
+ 
+     <section id="iniciativa" class="tab">
+       <h2>Registro de Iniciativa</h2>
+       <button id="add-iniciativa" onclick="add_iniciativa()">Adicionar Participante</button>
+       <div id="iniciativa-container"></div>
+     </section>
+ 
+     <section id="vida" class="tab">
+       <h2>Pontos de Vida / Condições</h2>
+       <div id="vida-container"></div>
+     </section>
+ 
+     <section id="dados" class="tab">
+       <h2>Rolador de Dados Virtual</h2>
+       <div id="rolador-container">
+         <input type="number" id="quantidade-dado" min="1" value="1" style="width:50px;">
+         <select id="tipo-dado">
+           <option value="4">d4</option>
+           <option value="6">d6</option>
+           <option value="8">d8</option>
+           <option value="10">d10</option>
+           <option value="12">d12</option>
+           <option value="20" selected>d20</option>
+           <option value="100">d100</option>
+         </select>
+         <input type="number" id="modificador" value="0" style="width:60px;">
+         <button id="rolar-dado" onclick="rolar_dado()">Rolar</button>
+         <div id="resultado-dado"></div>
+         <div id="historico-dados"></div>
+       </div>
+     </section>
+ 
+     <section id="nomes" class="tab">
+       <h2>Gerador de Nomes Aleatórios</h2>
+       <button id="gerar-nome" onclick="gerar_nome()">Gerar Nome</button>
+       <div id="nome-gerado"></div>
+     </section>
+ 
+     <section id="notas" class="tab">
+       <h2>Bloco de Notas do Mestre</h2>
+       <textarea id="notas-mestre" rows="12" placeholder="Suas anotações ficam salvas aqui..."></textarea>
+     </section>
+ 
+     <section id="musica" class="tab">
+       <h2>Música/Ambiente</h2>
+       <input type="text" id="link-musica" placeholder="Cole o link do YouTube ou Spotify">
+       <button id="adicionar-musica" onclick="adicionar_musica()">Adicionar</button>
+       <div id="musicas-embed"></div>
+     </section>
+ 
+-    <section id="missoes" class="tab">
+-      <h2>Painel de Missões / Quests</h2>
+-      <button id="add-missao" onclick="add_missao()">Adicionar Missão</button>
+-      <div id="missoes-list"></div>
+-    </section>
+-  </main> 
++    <section id="missoes" class="tab">
++      <h2>Painel de Missões / Quests</h2>
++      <button id="add-missao" onclick="add_missao()">Adicionar Missão</button>
++      <div id="missoes-list"></div>
++      <p class="empty-state" id="missoes-empty">Nenhuma missão registrada.</p>
++    </section>
++  </main>
+ 
+   <!-- SCRIPT AREA -->
+   <script src="JS/script.js"></script>
+   <script src="JS/funcaobotoes.js"></script>
+   <script src="JS/abrircriadores.js"></script>
+ </body>
+ </html>
