@@ -1,12 +1,15 @@
 const btnAbrirFicha = document.getElementById("abrirFichaForm"); 
 const btnFecharFicha = document.getElementById("fecharFichaForm");
 const fichaForm = document.getElementById("formsBack");
+
+const forms = document.getElementById("criar-ficha");
 const fichaFormElement = document.getElementById("criar-ficha");
 const nomeInput = document.getElementById("nome");
 
 btnAbrirFicha.addEventListener("click", () =>
 {
     fichaForm.classList.add("show-form");
+})
     if (nomeInput)
     {
         nomeInput.focus();
@@ -16,6 +19,7 @@ btnAbrirFicha.addEventListener("click", () =>
 btnFecharFicha.addEventListener("click", () =>
 {
     fichaForm.classList.remove("show-form");
+})
 });
 
 if (fichaForm)
@@ -53,10 +57,12 @@ function salvaFicha()
     }
 
     const construct = {
+        nome: nome.value,
         nome: nome.value.trim(),
         classe: classe.value,
         nivel: nivel.value,
         hp: vida.value,
+        detalhes: detalhes.value
         detalhes: detalhes.value.trim()
     };
     addFichaCard(construct);
@@ -64,5 +70,6 @@ function salvaFicha()
     atualizarEmptyStates();
 
     fichaForm.classList.remove("show-form");
+    forms.reset();
     fichaFormElement.reset();
 }
