@@ -222,20 +222,26 @@ function carregarNpcs() {
 carregarNpcs();
 
 // Registro de ordem de iniciativa>>>>>>>>>>>>>>>>>>>>>>>>
+let iniciativa = JSON.parse(localStorage.getItem('iniciativa')) || [];
 function renderIniciativa() {
   iniciativaContainer.innerHTML = '';
+  if (iniciativa.length === 0) return;
   if (iniciativa.length === 0) {
     iniciativaContainer.innerHTML = '<p class="empty-state">Nenhum participante registrado ainda.</p>';
     atualizarResumo();
     return;
   }
   const table = document.createElement('table');
+  table.style.width = '100%';
+  table.innerHTML = `<tr>
+    <th>Nome</th><th>Iniciativa</th><th>Remover</th></tr>`;
   const thead = document.createElement('thead');
   thead.innerHTML = '<tr><th>Nome</th><th>Iniciativa</th><th>Remover</th></tr>';
   table.appendChild(thead);
   const tbody = document.createElement('tbody');
   iniciativa.sort((a,b) => b.valor - a.valor);
   iniciativa.forEach((item, idx) => {
+    const row = table.insertRow();
     const row = tbody.insertRow();
     row.innerHTML = `<td>${item.nome}</td>
       <td>${item.valor}</td>
@@ -261,6 +267,7 @@ renderIniciativa();
 
 
 // Controle de Pontos de Vida e Condições>>>>>>>>>>>>>>>>>>>>>>>>
+let vidaPersonagens = JSON.parse(localStorage.getItem('vidaPersonagens')) || [];
 function renderVida() {
   vidaContainer.innerHTML = '';
 
@@ -302,6 +309,14 @@ function renderVida() {
   cardsWrapper.className = 'vida-grid';
 
   vidaPersonagens.forEach((p, idx) => {
+    const div = document.createElement('div');
+    div.className = 'ficha-card';
+    div.innerHTML = `<b>${p.nome}</b> <br>
+      <span>HP: <input type="number" value="${p.hp}" min="0" style="width:60px;" data-idx="${idx}"></span><br>
+      <span>Condições: <input type="text" value="${p.condicoes || ''}" data-idx="${idx}" placeholder="Ex: Envenenado"></span>
+      <button class="remove" data-idx="${idx}">&times;</button>`;
+    div.querySelector('.remove').onclick = () => {
+      vidaPersonagens.splice(idx,1);
     const card = document.createElement('div');
     card.className = 'ficha-card';
     card.innerHTML = `<b>${p.nome}</b> <br>
@@ -317,6 +332,11 @@ function renderVida() {
       salvarVida();
       renderVida();
     };
+    div.querySelectorAll('input[type="number"]').forEach(inp => {
+      inp.onchange = () => {
+        vidaPersonagens[idx].hp = parseInt(inp.value);
+        salvarVida();
+      };
     card.appendChild(removeBtn);
 
     const hpInput = card.querySelector('input[type="number"]');
@@ -325,12 +345,18 @@ function renderVida() {
       vidaPersonagens[idx].hp = Number.isNaN(value) ? 0 : value;
       salvarVida();
     });
+    div.querySelectorAll('input[type="text"]').forEach(inp => {
+      inp.onchange = () => {
+        vidaPersonagens[idx].condicoes = inp.value;
+        salvarVida();
+      };
 
     const condInput = card.querySelector('input[type="text"]');
     condInput.addEventListener('change', (event) => {
       vidaPersonagens[idx].condicoes = event.target.value;
       salvarVida();
     });
+    vidaContainer.appendChild(div);
 
     cardsWrapper.appendChild(card);
   });
@@ -338,13 +364,30 @@ function renderVida() {
   vidaContainer.appendChild(cardsWrapper);
   atualizarResumo();
 }
+vidaContainer.onclick = null;
+document.getElementById('vida-container').onclick = null;
+document.getElementById('vida-container').ondblclick = null;
+
+vidaContainer.innerHTML = `<button id="adicionar-vida">Adicionar Personagem</button>`;
+vidaContainer.querySelector('#adicionar-vida').onclick = () => {
+  const nome = prompt('Nome do personagem:');
+  const hp = parseInt(prompt('HP atual:'));
+  if(nome && !isNaN(hp)) {
+    vidaPersonagens.push({nome, hp, condicoes: ''});
+    salvarVida();
+    renderVida();
+  }
+};
 renderVida();
 
 function salvarVida() {
   localStorage.setItem('vidaPersonagens', JSON.stringify(vidaPersonagens));
   atualizarResumo();
 }
+renderVida();
+
 // Rolador de Dados rola>>>>>>>>>>>>>>>>>>>>>
+let historicoDados = JSON.parse(localStorage.getItem('historicoDados')) || [];
 function renderHistoricoDados() {
   histDados.innerHTML = historicoDados.slice(-10).reverse().map(e=>e).join('<br>');
 }
@@ -359,6 +402,7 @@ notas.oninput = () => {
 
 
 //Musicas >>>>>>>>>>>>>>>>>>>>
+let musicas = JSON.parse(localStorage.getItem('musicas')) || [];
 function addMusicaEmbed(url) {
   let embedCode = '';
   if(url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -384,31 +428,7 @@ function addMusicaEmbed(url) {
   } else {
     alert('Link inválido ou não suportado.');
   }
-}
-
-function renderMusicas() {
-  musicasEmbedDiv.innerHTML = '';
-  musicas.forEach((url, idx) => {
-    let embedCode = '';
-    if(url.includes('youtube.com') || url.includes('youtu.be')) {
-      let videoId = '';
-      if(url.includes('watch?v=')) {
-        videoId = url.split('watch?v=')[1].split('&')[0];
-      } else if(url.includes('youtu.be/')) {
-        videoId = url.split('youtu.be/')[1].split('?')[0];
-      }
-      if(videoId) {
-        embedCode = `<iframe width="320" height="180" src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>`;
-      }
-    } else if(url.includes('spotify.com/track/')) {
-      let trackId = url.split('track/')[1].split('?')[0];
-      embedCode = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${trackId}?utm_source=generator" width="100%" height="80" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-    } else if(url.includes('spotify.com/playlist/')) {
-      let playlistId = url.split('playlist/')[1].split('?')[0];
-      embedCode = `<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator" width="100%" height="80" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-    }
-    const div = document.createElement('div');
-    div.innerHTML = embedCode + `<button class="remove" title="Remover" data-idx="${idx}">&times;</button>`;
+@@ -245,69 +412,96 @@ function renderMusicas() {
     div.querySelector('.remove').onclick = () => {
       musicas.splice(idx,1);
       salvarMusicas();
@@ -505,23 +525,3 @@ function saveOnCard({title, fields})
     modalForm.appendChild(label);
     modalForm.appendChild(input);
   });
-}
-*/
-//Modal>>>>
-/*
-fields.forEach(field => {
-    const label = document.createElement('label');
-    label.textContent = field.label;
-    const input = field.type === 'textarea'
-      ? document.createElement('textarea')
-      : document.createElement('input');
-    input.type = field.type || 'text';
-    input.name = field.name;
-    input.required = field.required || false;
-    if (field.type !== 'textarea') input.value = field.value || '';
-    else input.textContent = field.value || '';
-    modalForm.appendChild(label);
-    modalForm.appendChild(input);
-  });
-
-  */
