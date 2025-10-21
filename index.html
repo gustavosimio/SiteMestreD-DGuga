@@ -25,6 +25,46 @@
     </nav>
   </aside>
   <main>
+    <header class="topbar">
+      <div class="topbar-info">
+        <h2>Resumo da Sessão</h2>
+        <p>Controle rapidamente os elementos da sua mesa enquanto conduz a aventura.</p>
+      </div>
+      <div class="session-timer">
+        <div class="timer-display">
+          <span class="timer-label">Tempo de sessão</span>
+          <span id="session-timer">00:00:00</span>
+        </div>
+        <div class="timer-buttons">
+          <button id="timer-start">Iniciar</button>
+          <button id="timer-pause">Pausar</button>
+          <button id="timer-reset">Zerar</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="quick-stats">
+      <article class="stat-card" data-stat="fichas">
+        <span class="stat-label">Fichas</span>
+        <span class="stat-value">0</span>
+      </article>
+      <article class="stat-card" data-stat="npcs">
+        <span class="stat-label">NPCs</span>
+        <span class="stat-value">0</span>
+      </article>
+      <article class="stat-card" data-stat="iniciativa">
+        <span class="stat-label">Iniciativa</span>
+        <span class="stat-value">0</span>
+      </article>
+      <article class="stat-card" data-stat="vida">
+        <span class="stat-label">Acompanhando vida</span>
+        <span class="stat-value">0</span>
+      </article>
+      <article class="stat-card" data-stat="missoes">
+        <span class="stat-label">Missões</span>
+        <span class="stat-value">0</span>
+      </article>
+    </section>
 
     <section id="fichas" class="tab active">
       <h2>Fichas de Personagem</h2>
@@ -33,6 +73,7 @@
         <!-- Fichas de personagem -->
         <button id="abrirFichaForm">Adicionar Ficha</button>
         <div id="fichas-list"></div>
+        <p class="empty-state" id="fichas-empty">Nenhuma ficha cadastrada ainda.</p>
       </div>
 
         <div class="forms-back" id="formsBack">
@@ -79,7 +120,7 @@
             </div>
 
             <div class="form-buttons">
-              <button type="button" id="salvarFicha" onclick="salvaFicha()">Enviar</button>
+              <button type="submit" id="salvarFicha">Salvar</button>
               <button type="reset" id="fecharFichaForm">Cancelar</button>
             </div>
           </form>
@@ -90,6 +131,7 @@
       <h2>NPCs</h2>
       <button id="add-npc" onclick="add_npc()">Adicionar NPC</button>
       <div id="npcs-list"></div>
+      <p class="empty-state" id="npcs-empty">Nenhum NPC cadastrado.</p>
     </section>
 
     <section id="iniciativa" class="tab">
@@ -145,8 +187,9 @@
       <h2>Painel de Missões / Quests</h2>
       <button id="add-missao" onclick="add_missao()">Adicionar Missão</button>
       <div id="missoes-list"></div>
+      <p class="empty-state" id="missoes-empty">Nenhuma missão registrada.</p>
     </section>
-  </main> 
+  </main>
 
   <!-- SCRIPT AREA -->
   <script src="JS/script.js"></script>

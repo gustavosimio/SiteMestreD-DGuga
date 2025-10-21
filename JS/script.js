@@ -21,6 +21,124 @@ const notas = document.getElementById('notas-mestre');
 const musicasEmbedDiv = document.getElementById('musicas-embed');
 const missoesList = document.getElementById('missoes-list');
 
+const statElements = {
+  fichas: document.querySelector('[data-stat="fichas"] .stat-value'),
+  npcs: document.querySelector('[data-stat="npcs"] .stat-value'),
+  iniciativa: document.querySelector('[data-stat="iniciativa"] .stat-value'),
+  vida: document.querySelector('[data-stat="vida"] .stat-value'),
+  missoes: document.querySelector('[data-stat="missoes"] .stat-value')
+};
+
+const emptyMessages = {
+  fichas: document.getElementById('fichas-empty'),
+  npcs: document.getElementById('npcs-empty'),
+  missoes: document.getElementById('missoes-empty')
+};
+
+const sessionTimerEl = document.getElementById('session-timer');
+const timerStartBtn = document.getElementById('timer-start');
+const timerPauseBtn = document.getElementById('timer-pause');
+const timerResetBtn = document.getElementById('timer-reset');
+
+let iniciativa = JSON.parse(localStorage.getItem('iniciativa')) || [];
+let vidaPersonagens = JSON.parse(localStorage.getItem('vidaPersonagens')) || [];
+let historicoDados = JSON.parse(localStorage.getItem('historicoDados')) || [];
+let musicas = JSON.parse(localStorage.getItem('musicas')) || [];
+let elapsedSeconds = Number(localStorage.getItem('tempoSessao')) || 0;
+let timerInterval = null;
+let timerStartReference = null;
+
+function atualizarEmptyStates() {
+  if (emptyMessages.fichas) {
+    emptyMessages.fichas.style.display = fichasList.children.length ? 'none' : 'block';
+  }
+  if (emptyMessages.npcs) {
+    emptyMessages.npcs.style.display = npcsList.children.length ? 'none' : 'block';
+  }
+  if (emptyMessages.missoes) {
+    emptyMessages.missoes.style.display = missoesList.children.length ? 'none' : 'block';
+  }
+}
+
+function atualizarResumo() {
+  if (statElements.fichas) {
+    statElements.fichas.textContent = fichasList.querySelectorAll('.ficha-card').length;
+  }
+  if (statElements.npcs) {
+    statElements.npcs.textContent = npcsList.querySelectorAll('.npc-card').length;
+  }
+  if (statElements.iniciativa) {
+    statElements.iniciativa.textContent = Array.isArray(iniciativa) ? iniciativa.length : 0;
+  }
+  if (statElements.vida) {
+    statElements.vida.textContent = Array.isArray(vidaPersonagens) ? vidaPersonagens.length : 0;
+  }
+  if (statElements.missoes) {
+    statElements.missoes.textContent = missoesList.querySelectorAll('.missao-card').length;
+  }
+}
+
+function atualizarTimerDisplay() {
+  if (!sessionTimerEl) {
+    return;
+  }
+  const horas = String(Math.floor(elapsedSeconds / 3600)).padStart(2, '0');
+  const minutos = String(Math.floor((elapsedSeconds % 3600) / 60)).padStart(2, '0');
+  const segundos = String(elapsedSeconds % 60).padStart(2, '0');
+  sessionTimerEl.textContent = `${horas}:${minutos}:${segundos}`;
+}
+
+function atualizarControlesTimer() {
+  if (!timerStartBtn || !timerPauseBtn || !timerResetBtn) {
+    return;
+  }
+  timerStartBtn.disabled = Boolean(timerInterval);
+  timerPauseBtn.disabled = !timerInterval;
+  timerResetBtn.disabled = !elapsedSeconds && !timerInterval;
+}
+
+function iniciarTimer(storedStart = null) {
+  if (timerInterval || !sessionTimerEl) {
+    return;
+  }
+  if (storedStart !== null && !Number.isNaN(storedStart)) {
+    timerStartReference = storedStart;
+  } else {
+    timerStartReference = Date.now() - (elapsedSeconds * 1000);
+  }
+  const atualizar = () => {
+    elapsedSeconds = Math.max(0, Math.floor((Date.now() - timerStartReference) / 1000));
+    atualizarTimerDisplay();
+    localStorage.setItem('tempoSessao', elapsedSeconds);
+  };
+  atualizar();
+  timerInterval = setInterval(atualizar, 1000);
+  localStorage.setItem('timerStatus', 'running');
+  localStorage.setItem('timerStart', String(timerStartReference));
+  atualizarControlesTimer();
+}
+
+function pausarTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  timerStartReference = null;
+  localStorage.setItem('tempoSessao', elapsedSeconds);
+  localStorage.setItem('timerStatus', 'paused');
+  localStorage.removeItem('timerStart');
+  atualizarControlesTimer();
+}
+
+function resetarTimer() {
+  pausarTimer();
+  elapsedSeconds = 0;
+  atualizarTimerDisplay();
+  localStorage.removeItem('tempoSessao');
+  localStorage.removeItem('timerStatus');
+  atualizarControlesTimer();
+}
+
 //Nomes Aleatórios
 const nomes = [
   "Elowen", "Tharivol", "Merla", "Korrin", "Barundar", "Lia", "Bryn", "Seraphine", "Grim", "Talon", "Syllin", "Durnan", "Yagra", "Fenthwick", "Jasper", "Nim", "Tika", "Raistlin", "Havard", "Anwyn", "Finn", "Isolde", "Leoric"
@@ -41,6 +159,7 @@ function addFichaCard(ficha) {
     salvarFichas();
   };
   fichasList.appendChild(div);
+  atualizarEmptyStates();
 }
 
 function salvarFichas() {
@@ -55,10 +174,14 @@ function salvarFichas() {
     });
   });
   localStorage.setItem('fichas', JSON.stringify(fichas));
+  atualizarResumo();
+  atualizarEmptyStates();
 }
 function carregarFichas() {
   const arr = JSON.parse(localStorage.getItem('fichas')) || [];
   arr.forEach(addFichaCard);
+  atualizarResumo();
+  atualizarEmptyStates();
 }
 carregarFichas();
 
@@ -75,6 +198,7 @@ function addNpcCard(npc) {
     salvarNpcs();
   };
   npcsList.appendChild(div);
+  atualizarEmptyStates();
 }
 function salvarNpcs() {
   const npcs = [];
@@ -86,29 +210,38 @@ function salvarNpcs() {
     });
   });
   localStorage.setItem('npcs', JSON.stringify(npcs));
+  atualizarResumo();
+  atualizarEmptyStates();
 }
 function carregarNpcs() {
   const arr = JSON.parse(localStorage.getItem('npcs')) || [];
   arr.forEach(addNpcCard);
+  atualizarResumo();
+  atualizarEmptyStates();
 }
 carregarNpcs();
 
 // Registro de ordem de iniciativa>>>>>>>>>>>>>>>>>>>>>>>>
-let iniciativa = JSON.parse(localStorage.getItem('iniciativa')) || [];
 function renderIniciativa() {
   iniciativaContainer.innerHTML = '';
-  if (iniciativa.length === 0) return;
+  if (iniciativa.length === 0) {
+    iniciativaContainer.innerHTML = '<p class="empty-state">Nenhum participante registrado ainda.</p>';
+    atualizarResumo();
+    return;
+  }
   const table = document.createElement('table');
-  table.style.width = '100%';
-  table.innerHTML = `<tr>
-    <th>Nome</th><th>Iniciativa</th><th>Remover</th></tr>`;
+  const thead = document.createElement('thead');
+  thead.innerHTML = '<tr><th>Nome</th><th>Iniciativa</th><th>Remover</th></tr>';
+  table.appendChild(thead);
+  const tbody = document.createElement('tbody');
   iniciativa.sort((a,b) => b.valor - a.valor);
   iniciativa.forEach((item, idx) => {
-    const row = table.insertRow();
+    const row = tbody.insertRow();
     row.innerHTML = `<td>${item.nome}</td>
       <td>${item.valor}</td>
       <td><button class="remove" data-idx="${idx}">&times;</button></td>`;
   });
+  table.appendChild(tbody);
   iniciativaContainer.appendChild(table);
   table.querySelectorAll('.remove').forEach(btn => {
     btn.onclick = () => {
@@ -117,66 +250,101 @@ function renderIniciativa() {
       renderIniciativa();
     };
   });
+  atualizarResumo();
 }
 
 function salvarIniciativa() {
   localStorage.setItem('iniciativa', JSON.stringify(iniciativa));
+  atualizarResumo();
 }
 renderIniciativa();
 
 
 // Controle de Pontos de Vida e Condições>>>>>>>>>>>>>>>>>>>>>>>>
-let vidaPersonagens = JSON.parse(localStorage.getItem('vidaPersonagens')) || [];
 function renderVida() {
   vidaContainer.innerHTML = '';
+
+  const actions = document.createElement('div');
+  actions.className = 'vida-actions';
+
+  const addButton = document.createElement('button');
+  addButton.id = 'adicionar-vida';
+  addButton.textContent = 'Adicionar Personagem';
+  addButton.onclick = () => {
+    const nome = prompt('Nome do personagem:');
+    if (!nome) {
+      return;
+    }
+    const hpInput = prompt('HP atual:');
+    const hp = parseInt(hpInput, 10);
+    if (Number.isNaN(hp)) {
+      alert('Informe um valor de HP válido.');
+      return;
+    }
+    vidaPersonagens.push({ nome, hp, condicoes: '' });
+    salvarVida();
+    renderVida();
+  };
+
+  actions.appendChild(addButton);
+  vidaContainer.appendChild(actions);
+
+  if (vidaPersonagens.length === 0) {
+    const empty = document.createElement('p');
+    empty.className = 'empty-state';
+    empty.textContent = 'Nenhum personagem monitorado. Clique em "Adicionar Personagem".';
+    vidaContainer.appendChild(empty);
+    atualizarResumo();
+    return;
+  }
+
+  const cardsWrapper = document.createElement('div');
+  cardsWrapper.className = 'vida-grid';
+
   vidaPersonagens.forEach((p, idx) => {
-    const div = document.createElement('div');
-    div.className = 'ficha-card';
-    div.innerHTML = `<b>${p.nome}</b> <br>
-      <span>HP: <input type="number" value="${p.hp}" min="0" style="width:60px;" data-idx="${idx}"></span><br>
-      <span>Condições: <input type="text" value="${p.condicoes || ''}" data-idx="${idx}" placeholder="Ex: Envenenado"></span>
-      <button class="remove" data-idx="${idx}">&times;</button>`;
-    div.querySelector('.remove').onclick = () => {
-      vidaPersonagens.splice(idx,1);
+    const card = document.createElement('div');
+    card.className = 'ficha-card';
+    card.innerHTML = `<b>${p.nome}</b> <br>
+      <span>HP: <input type="number" value="${p.hp}" min="0" style="width:80px;"></span><br>
+      <span>Condições: <input type="text" value="${p.condicoes || ''}" placeholder="Ex: Envenenado"></span>`;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove';
+    removeBtn.innerHTML = '&times;';
+    removeBtn.title = 'Remover';
+    removeBtn.onclick = () => {
+      vidaPersonagens.splice(idx, 1);
       salvarVida();
       renderVida();
     };
-    div.querySelectorAll('input[type="number"]').forEach(inp => {
-      inp.onchange = () => {
-        vidaPersonagens[idx].hp = parseInt(inp.value);
-        salvarVida();
-      };
-    });
-    div.querySelectorAll('input[type="text"]').forEach(inp => {
-      inp.onchange = () => {
-        vidaPersonagens[idx].condicoes = inp.value;
-        salvarVida();
-      };
-    });
-    vidaContainer.appendChild(div);
-  });
-}
-vidaContainer.onclick = null;
-document.getElementById('vida-container').onclick = null;
-document.getElementById('vida-container').ondblclick = null;
+    card.appendChild(removeBtn);
 
-vidaContainer.innerHTML = `<button id="adicionar-vida">Adicionar Personagem</button>`;
-vidaContainer.querySelector('#adicionar-vida').onclick = () => {
-  const nome = prompt('Nome do personagem:');
-  const hp = parseInt(prompt('HP atual:'));
-  if(nome && !isNaN(hp)) {
-    vidaPersonagens.push({nome, hp, condicoes: ''});
-    salvarVida();
-    renderVida();
-  }
-};
-function salvarVida() {
-  localStorage.setItem('vidaPersonagens', JSON.stringify(vidaPersonagens));
+    const hpInput = card.querySelector('input[type="number"]');
+    hpInput.addEventListener('change', (event) => {
+      const value = parseInt(event.target.value, 10);
+      vidaPersonagens[idx].hp = Number.isNaN(value) ? 0 : value;
+      salvarVida();
+    });
+
+    const condInput = card.querySelector('input[type="text"]');
+    condInput.addEventListener('change', (event) => {
+      vidaPersonagens[idx].condicoes = event.target.value;
+      salvarVida();
+    });
+
+    cardsWrapper.appendChild(card);
+  });
+
+  vidaContainer.appendChild(cardsWrapper);
+  atualizarResumo();
 }
 renderVida();
 
+function salvarVida() {
+  localStorage.setItem('vidaPersonagens', JSON.stringify(vidaPersonagens));
+  atualizarResumo();
+}
 // Rolador de Dados rola>>>>>>>>>>>>>>>>>>>>>
-let historicoDados = JSON.parse(localStorage.getItem('historicoDados')) || [];
 function renderHistoricoDados() {
   histDados.innerHTML = historicoDados.slice(-10).reverse().map(e=>e).join('<br>');
 }
@@ -191,7 +359,6 @@ notas.oninput = () => {
 
 
 //Musicas >>>>>>>>>>>>>>>>>>>>
-let musicas = JSON.parse(localStorage.getItem('musicas')) || [];
 function addMusicaEmbed(url) {
   let embedCode = '';
   if(url.includes('youtube.com') || url.includes('youtu.be')) {
@@ -267,12 +434,38 @@ function salvarMissoes() {
     });
   });
   localStorage.setItem('missoes', JSON.stringify(missoes));
+  atualizarResumo();
+  atualizarEmptyStates();
 }
 function carregarMissoes() {
   const arr = JSON.parse(localStorage.getItem('missoes')) || [];
   arr.forEach(addMissaoCard);
+  atualizarResumo();
+  atualizarEmptyStates();
 }
 carregarMissoes();
+
+if (timerStartBtn) {
+  timerStartBtn.addEventListener('click', () => iniciarTimer());
+}
+if (timerPauseBtn) {
+  timerPauseBtn.addEventListener('click', () => pausarTimer());
+}
+if (timerResetBtn) {
+  timerResetBtn.addEventListener('click', () => resetarTimer());
+}
+
+atualizarTimerDisplay();
+const storedTimerStatus = localStorage.getItem('timerStatus');
+const storedTimerStart = parseInt(localStorage.getItem('timerStart'), 10);
+if (storedTimerStatus === 'running' && !Number.isNaN(storedTimerStart)) {
+  iniciarTimer(storedTimerStart);
+} else {
+  atualizarControlesTimer();
+}
+
+atualizarEmptyStates();
+atualizarResumo();
 
 function addMissaoCard(missao) {
   const div = document.createElement('div');
@@ -286,6 +479,7 @@ function addMissaoCard(missao) {
     salvarMissoes();
   };
   missoesList.appendChild(div);
+  atualizarEmptyStates();
 }
 
 /*

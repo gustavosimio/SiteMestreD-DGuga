@@ -1,6 +1,7 @@
 *{
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -10,6 +11,11 @@ body {
   color: #eee;
   display: flex;
   min-height: 100vh;
+}
+.empty-state {
+  color: #999;
+  font-size: 0.95rem;
+  margin-top: 8px;
 }
 .sidebar {
   width: 220px;
@@ -26,6 +32,31 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100px;
+}
+#iniciativa-container table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #303030;
+  border-radius: 8px;
+  overflow: hidden;
+}
+#iniciativa-container th,
+#iniciativa-container td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+#iniciativa-container th {
+  background: #610606;
+  color: #f5f5f5;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+#iniciativa-container td {
+  color: #eee;
+}
+#iniciativa-container tr:last-child td {
+  border-bottom: none;
 }
 .sidebar h1 {
   color: #610606;
@@ -59,6 +90,97 @@ main {
   padding: 36px 36px 36px 36px;
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.topbar {
+  background: #181818;
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+
+.topbar-info p {
+  color: #bbb;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+.session-timer {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.timer-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timer-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #bbb;
+  letter-spacing: 1px;
+}
+
+#session-timer {
+  font-size: 1.7rem;
+  font-weight: 600;
+  color: #f3f3f3;
+}
+
+.timer-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.timer-buttons button {
+  margin: 0;
+  min-width: 90px;
+}
+
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 18px;
+}
+
+.stat-card {
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease, border 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: #610606;
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: #bbb;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #f3f3f3;
 }
 
 .tab {
@@ -82,7 +204,7 @@ h2 {
 button {
   background: #610606;
   border: none;
-  color: #222;
+  color: #f5f5f5;
   padding: 8px 14px;
   margin: 8px 0 14px 0;
   border-radius: 4px;
@@ -93,13 +215,24 @@ button {
 button:hover {
   background: #8f1515;
 }
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 input, select, textarea {
   background: #292929;
   border: 1px solid #555;
-  color: #610606;
+  color: #f5f5f5;
   border-radius: 3px;
   padding: 7px 9px;
   margin-bottom: 8px;
+  caret-color: #610606;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid #610606;
+}
+input::placeholder, textarea::placeholder {
+  color: #aaaaaa;
 }
 textarea {
   width: 100%;
@@ -113,6 +246,14 @@ textarea {
 
 #fichas-list, #npcs-list, #missoes-list {
   margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.vida-actions {
+  margin-bottom: 12px;
+}
+.vida-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
@@ -150,7 +291,7 @@ textarea {
   margin: 7px 0;
   border-radius: 8px;
   border: none;
-  width: 80%;
+  width: 100%;
   min-height: 75px;
   background: #111;
 }
@@ -159,4 +300,6 @@ textarea {
   .sidebar h1 { font-size: 1rem;}
   .sidebar nav ul li { font-size: 0.84rem; padding: 11px 11px;}
   main { margin-left: 60px; padding: 18px;}
+  .topbar { padding: 18px; }
+  .quick-stats { gap: 12px; }
 }
